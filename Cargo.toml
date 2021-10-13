@@ -1,0 +1,11 @@
+[package]
+name = "vcd2v"
+version = "0.1.0"
+authors = [ "Andrew Kay <projects@ajk.me>" ]
+edition = "2018"
+description = "Simple utility for generating Verilog stimulus from VCD input"
+license = "ISC"
+
+[dependencies]
+clap = "2"
+vcd = "0.6.1"
