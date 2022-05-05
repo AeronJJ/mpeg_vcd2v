@@ -1,6 +1,6 @@
 # vcd2v
 
-Simple utility for generating Verilog stimulus from [VCD](https://en.wikipedia.org/wiki/Value_change_dump) input.
+Generate Verilog stimulus from [VCD](https://en.wikipedia.org/wiki/Value_change_dump) input.
 
 ## Usage
 
