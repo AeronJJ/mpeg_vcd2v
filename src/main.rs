@@ -32,12 +32,12 @@ fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>) {
                 .takes_value(true)
                 .value_name("SCALE"),
         )
-        .arg(Arg::with_name("selection").multiple(true).required(true))
+        .arg(Arg::with_name("selection").multiple(true))
         .get_matches();
 
     let selections: Vec<String> = matches
         .values_of("selection")
-        .unwrap()
+        .unwrap_or_default()
         .map(|v| v.to_string())
         .collect();
 

@@ -4,6 +4,7 @@ use std::io::{BufWriter, Read, Write};
 
 use vcd::Command::{ChangeScalar, Timestamp};
 use vcd::{Header, IdCode, Parser, Var, VarType};
+use vcd::ScopeItem;
 
 pub fn run<R: Read>(
     input: &mut R,
@@ -128,11 +129,49 @@ mod find_vcd_var_tests {
     }
 }
 
+fn collect_all_signals(header: &Header, out: &mut HashMap<IdCode, String>) {
+    fn walk_items(items: &[ScopeItem], prefix: &str, out: &mut HashMap<IdCode, String>) {
+        for item in items {
+            match item {
+                ScopeItem::Var(var) => {
+                    if var.var_type == VarType::Wire && var.size == 1 {
+                        let full_name = if prefix.is_empty() {
+                            var.reference.clone()
+                        } else {
+                            format!("{}.{}", prefix, var.reference)
+                        };
+
+                        out.insert(var.code, full_name);
+                    }
+                }
+
+                ScopeItem::Scope(scope) => {
+                    let new_prefix = if prefix.is_empty() {
+                        scope.identifier.clone()
+                    } else {
+                        format!("{}.{}", prefix, scope.identifier)
+                    };
+
+                    walk_items(&scope.children, &new_prefix, out);
+                }
+            }
+        }
+    }
+
+    walk_items(&header.items, "", out);
+}
+
+
 fn get_signal_map(
     header: &Header,
     selections: &[String],
 ) -> Result<HashMap<IdCode, String>, String> {
     let mut signals = HashMap::new();
+
+    if selections.is_empty() {
+        collect_all_signals(header, &mut signals);
+        return Ok(signals);
+    }
 
     for selection in selections {
         let (verilog_name, vcd_path) = parse_selection(selection)?;
