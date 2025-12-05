@@ -254,6 +254,15 @@ fn generate<R: Read, W: Write>(
     let mut time = 0;
     let mut last_time = start_time.unwrap_or(0);
 
+    for name in signals.values() {
+        // Convert hierarchical names "top.a.b.c" → "top_a_b_c"
+        let safe_name = name.replace('.', "_");
+
+        writeln!(output, "wire {};", safe_name)?;
+    }
+    writeln!(output)?; // blank line
+
+    writeln!(output, "initial begin")?;
     for command_result in parser {
         let command = command_result?;
 
@@ -273,18 +282,20 @@ fn generate<R: Read, W: Write>(
                 if delay > 0 {
                     let delay = delay as f32 * scale;
 
-                    writeln!(output, "#{};", delay)?;
+                    writeln!(output, "\t#{};", delay)?;
                 }
 
                 let verilog_name = signals.get(&i).unwrap();
+                let safe_name = verilog_name.replace('.', "_");
 
-                writeln!(output, "{} = {};", verilog_name, v)?;
+                writeln!(output, "\t{} = {};", safe_name, v)?;
 
                 last_time = time;
             }
             _ => (),
         }
     }
+    writeln!(output, "end")?;
 
     Ok(())
 }
