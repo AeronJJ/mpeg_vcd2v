@@ -130,7 +130,11 @@ mod find_vcd_var_tests {
 }
 
 fn collect_all_signals(header: &Header, out: &mut HashMap<IdCode, String>) {
-    fn walk_items(items: &[ScopeItem], prefix: &str, out: &mut HashMap<IdCode, String>) {
+    fn walk_items(
+        items: &[ScopeItem],
+        prefix: &str,
+        out: &mut HashMap<IdCode, String>,
+    ) {
         for item in items {
             match item {
                 ScopeItem::Var(var) => {
@@ -141,7 +145,35 @@ fn collect_all_signals(header: &Header, out: &mut HashMap<IdCode, String>) {
                             format!("{}.{}", prefix, var.reference)
                         };
 
-                        out.insert(var.code, full_name);
+                        eprintln!("Found signal: {}", full_name);
+                        eprint!("Include this signal? (y/n): ");
+                        io::stderr().flush().unwrap();
+
+                        let mut choice = String::new();
+                        io::stdin().read_line(&mut choice).unwrap();
+                        let choice = choice.trim();
+
+                        if choice.eq_ignore_ascii_case("y") | choice.is_empty() {
+                            // Ask for rename
+                            eprint!("Enter new name or press ENTER to keep '{}': ",
+                                   full_name);
+                            io::stderr().flush().unwrap();
+
+                            let mut newname = String::new();
+                            io::stdin().read_line(&mut newname).unwrap();
+                            let newname = newname.trim();
+
+                            let final_name = if newname.is_empty() {
+                                full_name.clone()
+                            } else {
+                                newname.to_string()
+                            };
+
+                            eprintln!("\tAdded as '{}'\n", final_name);
+                            out.insert(var.code, final_name);
+                        } else {
+                            eprintln!("\tSkipped\n");
+                        }
                     }
                 }
 
@@ -176,8 +208,15 @@ fn get_signal_map(
     for selection in selections {
         let (verilog_name, vcd_path) = parse_selection(selection)?;
 
-        let vcd_var = find_vcd_var(header, vcd_path)
-            .ok_or_else(|| format!("invalid VCD path: {}", vcd_path))?;
+        // let vcd_var = find_vcd_var(header, vcd_path)
+        //     .ok_or_else(|| format!("invalid VCD path: {}", vcd_path))?;
+	let vcd_var = match find_vcd_var(header, vcd_path) {
+            Some(v) => v,
+            None => {
+                eprintln!("Warning: invalid VCD path '{}', skipping", vcd_path);
+                continue;
+            }
+        };
 
         if vcd_var.var_type != VarType::Wire || vcd_var.size != 1 {
             return Err(format!("signal must be 1-bit wide wire: {}", vcd_path));
@@ -254,13 +293,13 @@ fn generate<R: Read, W: Write>(
     let mut time = 0;
     let mut last_time = start_time.unwrap_or(0);
 
-    for name in signals.values() {
-        // Convert hierarchical names "top.a.b.c" → "top_a_b_c"
-        let safe_name = name.replace('.', "_");
+    // for name in signals.values() {
+    //     // Convert hierarchical names "top.a.b.c" → "top_a_b_c"
+    //     let safe_name = name.replace('.', "_");
 
-        writeln!(output, "wire {};", safe_name)?;
-    }
-    writeln!(output)?; // blank line
+    //     writeln!(output, "reg {};", safe_name)?;
+    // }
+    // writeln!(output)?; // blank line
 
     writeln!(output, "initial begin")?;
     for command_result in parser {
