@@ -208,8 +208,6 @@ fn get_signal_map(
     for selection in selections {
         let (verilog_name, vcd_path) = parse_selection(selection)?;
 
-        // let vcd_var = find_vcd_var(header, vcd_path)
-        //     .ok_or_else(|| format!("invalid VCD path: {}", vcd_path))?;
 	let vcd_var = match find_vcd_var(header, vcd_path) {
             Some(v) => v,
             None => {

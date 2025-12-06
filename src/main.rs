@@ -10,30 +10,15 @@ use std::io::{self, BufRead, BufReader};
 fn main() {
     let (selections, start_time, end_time, scale, file, signal_map_file) = parse_args();
 
-    // let signal_map_entries: Vec<String> = if let Some(path) = signal_map_path {
-    // 	read_signal_map(path).expect("Failed to read signal map file")
-    // } else {
-    // 	Vec::new()
-    // };
-
     let mut combined: Vec<String> = Vec::new();
 
-    // selections
-    // if let Some(values) = selections {
-    // 	combined.extend(values.map(|v| v.to_string()));
-    // }
     combined.extend(selections.iter().cloned()); 
 
-    // signal map (vec<String> form)
-    // let signal_map_entries: Vec<String> = if let Some(path) = signal_map_file {
-    // 	read_signal_map(path).expect("Failed to read signal map file")
-    // };
     if let Some(path) = signal_map_file {
 	let smap = read_signal_map(path).expect("Failed to read signal map file");  
 	combined.extend(smap); // Doesn't protect against duplicates
     }
 
-    // let mut input = BufReader::new(io::stdin());
     let file = File::open(&file)
 	.expect("failed to open input VCD file");
     
@@ -106,16 +91,9 @@ fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>, String, 
         .unwrap() // safe because required
         .to_string();
 
-    // let signal_map_file = matches
-    // 	.value_of("signal_map")
-    // 	.map(|sm| String::from_str(sm))
-    // 	.expect("Invalid signal map argument")
-    // 	.unwrap_or(None);
     let signal_map_file: Option<String> = matches
 	.values_of("signal_map")
 	.and_then(|mut v| v.next().map(|s| s.to_string()));
-
-
 
     (selections, time_range.0, time_range.1, scale, input_file, signal_map_file)
 }
