@@ -299,7 +299,10 @@ fn generate<R: Read, W: Write>(
     // }
     // writeln!(output)?; // blank line
 
+    writeln!(output, "reg vcd_done;\n")?;
+
     writeln!(output, "initial begin")?;
+    writeln!(output, "\tvcd_done = 1'b0;")?;
     for command_result in parser {
         let command = command_result?;
 
@@ -332,6 +335,7 @@ fn generate<R: Read, W: Write>(
             _ => (),
         }
     }
+    writeln!(output, "\tvcd_done = 1'b1;")?;
     writeln!(output, "end")?;
 
     Ok(())
