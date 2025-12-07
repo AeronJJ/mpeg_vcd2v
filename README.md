@@ -12,6 +12,14 @@ Changes from source:
 
 Generate Verilog stimulus from [VCD](https://en.wikipedia.org/wiki/Value_change_dump) input.
 
+## Build
+
+```
+git clone https://github.com/AeronJJ/mpeg_vcd2v.git
+cargo build
+```
+Executable found: ./target/debug/vcd2v
+
 ## Usage
 
 ```bash
