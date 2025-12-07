@@ -27,7 +27,20 @@ vcd2v [OPTIONS] -i <input_file> <selection> > <outputfile>
 -h, --help                         Print help information
 ```
 
-### EXAMPLES
+### Signal Map File
+.sm file type, raw text
+Each line specifies a new signal in the VCD with an optional alias prefix:
+```text
+# Aliased:
+mpeg_sync_i=libsigrok.Sync
+mpeg_valid_i=libsigrok.Valid
+mpeg_data_8_i[0]=libsigrok.D0
+# Raw:
+libsigrok.D1
+libsigrok.D2
+```
+
+### Examples
 ```bash
 # Basic usage
 vcd2v -i input.vcd > output.vcd
