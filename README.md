@@ -37,6 +37,7 @@ vcd2v [OPTIONS] -i <input_file> <selection> > <outputfile>
 
 ### Signal Map File
 .sm file type, raw text
+
 Each line specifies a new signal in the VCD with an optional alias prefix:
 ```text
 # Aliased:
