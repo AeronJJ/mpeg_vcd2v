@@ -20,11 +20,11 @@ vcd2v [OPTIONS] -i <input_file> <selection> > <outputfile>
 
 ### Args
 ```
--i, --input <input_file>	Input .vcd file
--t, --time [START][:END]	Start and end times
--s, --scale <value>		Multiply time by scaling factor
--m, --signal_map <signal_map_file>	 Signal Map file, see below
--h, --help	 			 Print help information
+-i, --input <input_file>           Input .vcd file
+-t, --time [START][:END]           Start and end times
+-s, --scale <value>                Multiply time by scaling factor
+-m, --signal_map <signal_map_file> Signal Map file, see below
+-h, --help                         Print help information
 ```
 
 ### EXAMPLES
