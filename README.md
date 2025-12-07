@@ -1,8 +1,48 @@
+# Credit
+Original source code credited to Andrew Kay [https://git.sr.ht/~ajk/vcd2v](https://git.sr.ht/~ajk/vcd2v)
+
+This program has been modified to flow better in my mpeg-recorder project.
+
+Changes from source:
+- Reads VCD file in program, rather than reading from terminal buffer
+- Read signal map file
+- Scans VCD for all signals and asks user to include them, only if no signal map or selection is provided
+
 # vcd2v
 
 Generate Verilog stimulus from [VCD](https://en.wikipedia.org/wiki/Value_change_dump) input.
 
 ## Usage
+
+```bash
+vcd2v [OPTIONS] -i <input_file> <selection> > <outputfile>
+```
+
+### Args
+```
+-i, --input <input_file>	Input .vcd file
+-t, --time [START][:END]	Start and end times
+-s, --scale <value>		Multiply time by scaling factor
+-m, --signal_map <signal_map_file>	 Signal Map file, see below
+-h, --help	 			 Print help information
+```
+
+### EXAMPLES
+```bash
+# Basic usage
+vcd2v -i input.vcd > output.vcd
+
+# Time range
+vcd2v --time 0:500 -i input.vcd > output.vcd
+
+# Scale values
+vcd2v --scale 0.1 -i input.vcd > scaled.sv
+
+# Combine map + manual selections
+vcd2v --signal_map map.sm libsigrok.clk libsigrok.reset -i input.vcd > output.vcd
+```
+
+
 
 So, you have a VCD file containing signals (`libsigrok.D1` and `libsigrok.D3`), you want to convert these to a series of Verilog delay and assignment statements:
 
