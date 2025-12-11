@@ -8,7 +8,7 @@ use clap::{App, Arg};
 use std::io::{self, BufRead, BufReader};
 
 fn main() {
-    let (selections, start_time, end_time, scale, file, signal_map_file) = parse_args();
+    let (selections, start_time, end_time, scale, file, signal_map_file, frequency) = parse_args();
 
     let mut combined: Vec<String> = Vec::new();
 
@@ -25,13 +25,13 @@ fn main() {
     let mut input = BufReader::new(file);
 
 
-    if let Err(e) = vcd2v::run(&mut input, &combined, start_time, end_time, scale) {
+    if let Err(e) = vcd2v::run(&mut input, &combined, start_time, end_time, scale, frequency) {
         eprintln!("{}", e);
         process::exit(1);
     }
 }
 
-fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>, String, Option<String>) {
+fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>, String, Option<String>, Option<f32>) {
     let matches = App::new("vcd2v")
 	.arg(
             Arg::with_name("input")
@@ -64,6 +64,14 @@ fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>, String, 
 		.value_name("SIGNAL_MAP")
 		.help("Signal map file to map VCD signals to testbench signals")
 	)
+	.arg(
+	    Arg::with_name("frequency")
+		.long("frequency")
+		.short("f")
+		.takes_value(true)
+		.value_name("FREQUENCY")
+		.help("Specify a frequency im MHz to round all time delays to, might not work when specifying a start time") // TODO: Make work with any start time
+	)
         .arg(Arg::with_name("selection").multiple(true))
         .get_matches();
 
@@ -95,7 +103,13 @@ fn parse_args() -> (Vec<String>, Option<u64>, Option<u64>, Option<f32>, String, 
 	.values_of("signal_map")
 	.and_then(|mut v| v.next().map(|s| s.to_string()));
 
-    (selections, time_range.0, time_range.1, scale, input_file, signal_map_file)
+    let target_frequency: Option<f32> = matches
+	.value_of("frequency")
+	.map(|s| f32::from_str(s))
+	.transpose()
+	.expect("invalid frequency argument");
+
+    (selections, time_range.0, time_range.1, scale, input_file, signal_map_file, target_frequency)
 }
 
 fn parse_time_range(value: &str) -> Result<(Option<u64>, Option<u64>), String> {

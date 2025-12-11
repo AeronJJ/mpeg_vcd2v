@@ -12,6 +12,7 @@ pub fn run<R: Read>(
     start_time: Option<u64>,
     end_time: Option<u64>,
     scale: Option<f32>,
+    frequency: Option<f32>,
 ) -> Result<(), String> {
     let mut parser = Parser::new(input);
 
@@ -28,6 +29,7 @@ pub fn run<R: Read>(
         start_time,
         end_time,
         scale.unwrap_or(1.0),
+	1E3 / frequency.unwrap_or(1E3),
     )
     .map_err(|e| e.to_string())
 }
@@ -287,6 +289,7 @@ fn generate<R: Read, W: Write>(
     start_time: Option<u64>,
     end_time: Option<u64>,
     scale: f32,
+    period: f32,
 ) -> io::Result<()> {
     let mut time = 0;
     let mut last_time = start_time.unwrap_or(0);
@@ -320,7 +323,10 @@ fn generate<R: Read, W: Write>(
                 let delay = time - last_time;
 
                 if delay > 0 {
-                    let delay = delay as f32 * scale;
+		    let delay = {
+			let v = delay as f32 * scale;
+			(v / period).round() * period
+		    };
 
                     writeln!(output, "\t#{};", delay)?;
                 }
