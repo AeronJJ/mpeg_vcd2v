@@ -7,6 +7,7 @@ Changes from source:
 - Reads VCD file in program, rather than reading from terminal buffer
 - Read signal map file
 - Scans VCD for all signals and asks user to include them, only if no signal map or selection is provided
+- Specify frequency to align all delay values to
 
 # vcd2v
 
@@ -32,6 +33,7 @@ vcd2v [OPTIONS] -i <input_file> <selection> > <outputfile>
 -t, --time [START][:END]           Start and end times
 -s, --scale <value>                Multiply time by scaling factor
 -m, --signal_map <signal_map_file> Signal Map file, see below
+-f, --frequency	 		   Frequency in MHz to align delay values to
 -h, --help                         Print help information
 ```
 
@@ -62,6 +64,9 @@ vcd2v --scale 0.1 -i input.vcd > scaled.sv
 
 # Combine map + manual selections
 vcd2v --signal_map map.sm libsigrok.clk libsigrok.reset -i input.vcd > output.vcd
+
+# Specify 6MHz target frequency
+vcd2v -i input.vcd -f 6 > output.vcd
 ```
 
 
