@@ -1,7 +1,7 @@
 # Credit
 Original source code credited to Andrew Kay [https://git.sr.ht/~ajk/vcd2v](https://git.sr.ht/~ajk/vcd2v)
 
-This program has been modified to flow better in my mpeg-recorder project.
+This program has been modified to flow better in my mpeg_recorder project.
 
 Changes from source:
 - Reads VCD file in program, rather than reading from terminal buffer
